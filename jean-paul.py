@@ -1,6 +1,6 @@
 import streamlit as st
-#import pandas as pd
-#import numpy as np
+import pandas as pd
+import numpy as np
 
 
 
@@ -12,6 +12,7 @@ def main():
 
     pages = {
         'Accueil': Accueil,
+        'Obtenir une estimation' : estimation_volume
         #'Base de données': base_de_donnees,
         
         }
@@ -25,7 +26,7 @@ def main():
 
 
     with st.sidebar:
-        st.image('assets/artidem.png', width=300)
+        st.image('assets/demenagement.png', width=300)
         page = st.selectbox("Choose a page", tuple(pages.keys()))
 
 
@@ -65,9 +66,49 @@ def Accueil():
 
     col1, col2, col3 = st.columns(3)
     with col2:
-        st.image('assets/artidem.png', width=300)
+        st.image('assets/demenagement.png', width=300)
     
-      
+
+
+
+
+def estimation_volume():
+
+    #graphs centrés
+    config = {'displayModeBar': False}
+
+    with open('p2.html','r',encoding='UTF-8') as file :
+        data = file.read()
+
+    st.markdown(data, unsafe_allow_html=True)
+
+
+    link = 'bdd/items.csv'
+    df_items = pd.read_csv(link)
+
+
+
+    #now code the plotly chart based on the widget selection
+    item = df_items['item'].unique()
+    line = st.selectbox("choisis l'item",item)
+    loc = df_items.loc[df_items['item'] == line]
+
+    def load_data():
+
+        return pd.DataFrame(
+            {
+                "item": [line],
+                "second column": loc['volume (m3)'],
+            }
+        )
+
+
+    df_display = load_data()
+
+    # Display the dataframe and allow the user to stretch the dataframe
+    # across the full width of the container, based on the checkbox value
+    st.dataframe(df_display)
+
    
 
 if __name__ == "__main__":
